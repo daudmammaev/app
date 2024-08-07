@@ -1,5 +1,7 @@
 package app.controllers;
 
+import app.Dto.DtoTask;
+import app.Dto.DtoUser;
 import app.models.Comment;
 import app.models.Task;
 import app.models.User;
@@ -48,9 +50,20 @@ public class TaskController {
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Просмотр задачи")
     @GetMapping("/check-task/{id}")
-    public ResponseEntity<Task> getTask(@PathVariable("id") long id){
+    public ResponseEntity<DtoTask> getTask(@PathVariable("id") long id){
         Optional<Task> task = taskRepository.findById(id);
-        return task.map(value -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(value)).orElse(null);
+        if (task.isPresent()){
+            DtoTask dtoTask = new DtoTask();
+            DtoUser dtoUser = new DtoUser();
+            dtoUser.setEmail(task.get().getUser().getEmail());
+            dtoUser.setUsername(task.get().getUser().getUsername());
+            dtoTask.setDtoUser(dtoUser);
+            dtoTask.setId(task.get().getId());
+            dtoTask.setText(task.get().getText());
+            dtoTask.setCommets(task.get().getCommets());
+            return ResponseEntity.ok().body(dtoTask);
+        }
+        return null;
     }
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Обновление задачи")

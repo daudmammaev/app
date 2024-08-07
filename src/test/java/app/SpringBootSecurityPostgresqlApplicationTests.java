@@ -3,6 +3,7 @@ package app;
 
 import java.util.Optional;
 
+import app.Dto.DtoTask;
 import app.models.Comment;
 import app.models.Task;
 import app.repository.TaskRepository;
@@ -38,12 +39,8 @@ public class SpringBootSecurityPostgresqlApplicationTests {
     @WithMockUser(username = "d", password = "d")
     @Test
     public void checkTask() throws Exception {
-      Optional<Task> task = Optional.of(new Task());
-      task.get().setStatus("ok");
-      task.get().setText("123");
+
       long id = 1L;
-
-
 
       mockMvc.perform(
               get("/check-task/{id}", id))

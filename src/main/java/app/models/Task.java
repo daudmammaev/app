@@ -13,13 +13,13 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     @Size(max = 100)
     private String text;
     private String status;
     @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    private User user;
-    private String sendTaskTo;
+    private User autor;
+    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    private User sendTaskTo;
     @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private List<Comment> commets;
 

@@ -2,68 +2,62 @@ package app.controllers;
 
 import app.Dto.DtoTask;
 import app.Dto.DtoUser;
+import app.Services.TaskServicesImpl;
 import app.models.Comment;
 import app.models.Task;
 import app.models.User;
 import app.repository.TaskRepository;
 import app.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
-@Tag(name = "Основной контроллер")
+import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
+import static app.staic.Mapper.DtotaskToTask;
+import static app.staic.Mapper.TaskToDtoTask;
+import static app.staic.Static.getUser;
+@Slf4j
 @RestController
 public class TaskController {
     @Autowired
     public UserRepository userRepository;
     @Autowired
     public TaskRepository taskRepository;
+    @Autowired
+    public TaskServicesImpl taskServices;
 
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Создать задачу", description = "Пользователь должен авторизоваться")
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task,
-                           @Parameter(description = "Нужно, чтобы ловить пользователя") Authentication authentication, HttpServletRequest request){
-        authentication = (Authentication) request.getUserPrincipal();
-        // Получаем информацию о пользователе
-        var userDetails = (UserDetails) authentication.getPrincipal();
-        // Используем
-        Optional<User> user = userRepository.findByPassword(userDetails.getPassword());
+    public ResponseEntity<Task> createTask(@Valid @RequestBody DtoTask dtoTask,Authentication authentication){
 
-        if(user.isPresent()){
-            task.setUser(user.get());
-            taskRepository.save(task);
-        }
-
-        return ResponseEntity.status(201).body(task);
+        return ResponseEntity.ok().body(taskServices.save(getUser(userRepository, authentication), DtotaskToTask(dtoTask)));
     }
+
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Просмотр задачи")
     @GetMapping("/check-task/{id}")
     public ResponseEntity<DtoTask> getTask(@PathVariable("id") long id){
-        Optional<Task> task = taskRepository.findById(id);
-        if (task.isPresent()){
-            DtoTask dtoTask = new DtoTask();
-            DtoUser dtoUser = new DtoUser();
-            dtoUser.setEmail(task.get().getUser().getEmail());
-            dtoUser.setUsername(task.get().getUser().getUsername());
-            dtoTask.setDtoUser(dtoUser);
-            dtoTask.setId(task.get().getId());
-            dtoTask.setText(task.get().getText());
-            dtoTask.setCommets(task.get().getCommets());
-            return ResponseEntity.ok().body(dtoTask);
-        }
-        return null;
+        return ResponseEntity.ok().body(taskServices.getTask(id));
+    }
+    @Secured("ROLE_ADMIN")
+    @SecurityRequirement(name = "JWT")
+    @Operation(summary = "Просмотр задач")
+    @GetMapping("/check-tasks")
+    public ResponseEntity<List<DtoTask>> getTasks(){
+        return ResponseEntity.ok().body(taskServices.getTasks());
     }
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Обновление задачи")
@@ -74,26 +68,7 @@ public class TaskController {
             Authentication authentication,
             HttpServletRequest request){
 
-        Optional<Task> task1 = taskRepository.findById(id);
-        authentication = (Authentication) request.getUserPrincipal();
-        // Получаем информацию о пользователе
-        var userDetails = (UserDetails) authentication.getPrincipal();
-        // Используем
-        Optional<User> user = userRepository.findByPassword(userDetails.getPassword());
 
-        if (task1.isPresent() && task1.get().getUser() == user.get()){
-
-            if(task.getText() != null){
-                task1.get().setText(task.getText());
-            }
-            if(task.getStatus() != null){
-                task1.get().setStatus(task.getStatus());
-            }
-            if(task.getSendTaskTo() != null && userRepository.findByUsername(task.getSendTaskTo()).isPresent()){
-                task1.get().setUser(userRepository.findByUsername(task.getSendTaskTo()).get());
-            }
-            return ResponseEntity.ok(taskRepository.save(task1.get()));
-        }
         return ResponseEntity.status(201).body(task);
     }
     @SecurityRequirement(name = "JWT")

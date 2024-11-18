@@ -1,5 +1,6 @@
 package app.controllers;
-
+import app.models.ERole;
+import org.slf4j.Logger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,9 +84,10 @@ public class AuthController {
 
     Set<String> strRoles = signUpRequest.getRole();
     Set<Role> roles = new HashSet<>();
-
+    roles.add(new Role(ERole.ROLE_USER));
 
     user.setRoles(roles);
+
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

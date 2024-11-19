@@ -15,4 +15,5 @@ public class Comment {
     @NotBlank
     @Size(max = 100)
     private String text;
+
 }

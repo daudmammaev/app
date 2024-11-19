@@ -14,7 +14,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Size(max = 100)
+    @NotBlank
     private String text;
+    @NotBlank
     private String status;
     @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     private User autor;

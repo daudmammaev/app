@@ -13,12 +13,10 @@ import lombok.Data;
 import java.util.List;
 @Data
 public class DtoTask {
-    @NotBlank
-    @Size(max = 100)
     private String text;
     private String status;
-    private User autor;
-    private User sendTaskTo;
+    private DtoUser autor;
+    private DtoUser sendTaskTo;
     private List<Comment> commets;
 
 }

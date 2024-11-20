@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static app.staic.Static.getUser;
-
+/*
+ *Общий контроллер
+ */
 @RestController
 public class TaskController {
     @Autowired

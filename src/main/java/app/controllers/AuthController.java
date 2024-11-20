@@ -1,6 +1,6 @@
 package app.controllers;
+
 import app.models.ERole;
-import org.slf4j.Logger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +31,9 @@ import app.repository.RoleRepository;
 import app.repository.UserRepository;
 import app.security.jwt.JwtUtils;
 import app.security.services.UserDetailsImpl;
-
+/*
+*Контроллер авторизации и аутентификации
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")

@@ -16,11 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static app.staic.Mapper.DtotaskToTask;
 import static app.staic.Static.getUser;
-
+/*
+ *Контроллер для Admin`a
+ */
 @RestController
 public class TaskAdminController {
     @Autowired

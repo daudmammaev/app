@@ -18,7 +18,7 @@ import java.util.List;
 
 import static app.staic.Static.getUser;
 /*
- *Общий контроллер
+ *Общий контроллер///
  */
 @RestController
 public class TaskController {
